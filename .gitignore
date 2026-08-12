@@ -1,0 +1,45 @@
+# Build and release output
+build/
+dist/
+stage/
+
+# Native compiler output
+*.dll
+*.exe
+*.lib
+*.exp
+*.pdb
+*.ilk
+
+# Per-client state and optional local art/data
+placements.tsv
+placements.tsv.bak
+terrain_deform.tsv
+thumbnails/
+ui/
+assets/HouseDecorNames.tsv
+Data/
+Cache/
+Interface/
+Logs/
+Screenshots/
+WTF/
+
+# Never publish custom object payloads or their manifests
+custom-assets/
+**/decor.json
+*.m2
+*.mdx
+*.wmo
+*.blp
+*.dbc
+*.db2
+*.mpq
+
+# Editor/python files
+.vs/
+.vscode/
+__pycache__/
+*.pyc
+*.user
+Thumbs.db

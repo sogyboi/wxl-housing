@@ -1,0 +1,34 @@
+{
+  "manifest": 1,
+
+  "extension": {
+    "id": "wxl-housing",
+    "version": "0.8.0",
+    "abi": "1.1",
+    "entry": "wxl-housing.dll",
+    "assets": [],
+    "requires": {
+      "wxl-db2": "1.0.0"
+    },
+    "conflicts": [],
+
+    "hooks": []
+  },
+
+  "deploy": {
+    "mode": "release",
+    "match": "wxl-housing-*.zip"
+  },
+
+  "listing": {
+    "title": "Housing Editor",
+    "tagline": "Retail-style catalog, persistent placement, free build camera, and terrain tools.",
+    "description": "store/description.md",
+    "gallery": [],
+    "categories": ["tools", "housing"],
+    "accent": "#7a9e5c"
+  },
+
+  "license": "GPL-3.0-or-later",
+  "signature": null
+}

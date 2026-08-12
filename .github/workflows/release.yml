@@ -1,0 +1,83 @@
+name: Build and release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wxl-housing-release
+  cancel-in-progress: false
+
+env:
+  EXT_NAME: wxl-housing
+  CORE_REPO: WarcraftXL/wxl-core
+  CORE_REF: v1.1
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out this extension
+        uses: actions/checkout@v4
+        with:
+          path: ext
+
+      - name: Audit the public source tree
+        shell: pwsh
+        run: ./ext/scripts/Verify-PublicTree.ps1
+
+      - name: Run source tests
+        shell: pwsh
+        run: python -m unittest discover -s ext/tests -v
+
+      - name: Check out wxl-core
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.CORE_REPO }}
+          ref: ${{ env.CORE_REF }}
+          submodules: recursive
+          path: core
+
+      - name: Add the extension source to wxl-core
+        shell: pwsh
+        run: |
+          $destination = "core/extensions/$env:EXT_NAME"
+          New-Item -ItemType Directory -Force -Path $destination | Out-Null
+          Get-ChildItem -LiteralPath ext -Force |
+            Where-Object { $_.Name -notin @('.git', '.github', 'build', 'dist', 'stage') } |
+            ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $destination -Recurse -Force }
+
+      - name: Configure the Win32 extension build
+        shell: pwsh
+        run: cmake -S core -B core/build -A Win32
+
+      - name: Build the extension DLL
+        shell: pwsh
+        run: cmake --build core/build --config Release --target $env:EXT_NAME --parallel
+
+      - name: Read version and build the Hub ZIP
+        id: package
+        shell: pwsh
+        run: |
+          $version = (Get-Content ext/wxl.json -Raw | ConvertFrom-Json).extension.version
+          if (-not $version) { throw 'wxl.json has no extension.version' }
+          $stage = 'stage'
+          $archive = "dist/$env:EXT_NAME-$version.zip"
+          New-Item -ItemType Directory -Force -Path $stage, 'dist' | Out-Null
+          Copy-Item "core/build/Release/$env:EXT_NAME.dll" "$stage/$env:EXT_NAME.dll"
+          Copy-Item 'ext/wxl.json', 'ext/README.md', 'ext/LICENSE', 'ext/THIRD_PARTY_NOTICES.md' -Destination $stage
+          Compress-Archive -Path "$stage/*" -DestinationPath $archive -Force
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "archive=$archive" >> $env:GITHUB_OUTPUT
+
+      - name: Publish the Hub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.package.outputs.version }}
+          name: Housing Editor ${{ steps.package.outputs.version }}
+          body: Hub package built from ${{ github.sha }}.
+          files: ${{ steps.package.outputs.archive }}
