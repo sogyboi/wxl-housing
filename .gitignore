@@ -2,6 +2,7 @@
 build/
 dist/
 stage/
+artifacts/
 
 # Native compiler output
 *.dll

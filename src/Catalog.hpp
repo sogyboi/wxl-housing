@@ -88,10 +88,13 @@ namespace wxl_housing
         std::vector<const DecorRow*> filtered_;
 
         char filter_[128] = {};
-        bool includeDnt_ = true;
-        bool placeableOnly_ = false;
+        // Keep the opening catalog focused on props that are usable in the
+        // local editor.  Technical WMO/DNT entries remain available through
+        // the Filters popup for inspection.
+        bool includeDnt_ = false;
+        bool placeableOnly_ = true;
         bool compactView_ = false;
-        int categoryFilter_ = 0;
+        int categoryFilter_ = 1;
         int typeFilter_ = -1;
         uint32_t selectedRow_ = 0;
         int placeCount_ = 0;

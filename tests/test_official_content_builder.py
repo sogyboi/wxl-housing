@@ -22,6 +22,12 @@ class OfficialContentBuilderTests(unittest.TestCase):
         ):
             self.assertIn(token, BUILDER)
 
+    def test_runtime_reads_official_art_from_the_local_housing_patch(self) -> None:
+        catalog = (ROOT / "src" / "Catalog.cpp").read_text(encoding="utf-8")
+        self.assertIn("Data\\\\Patch-Housing.MPQ\\\\interface\\\\housing", catalog)
+        self.assertIn("std::string(kOfficialHousingPatch) + row.thumbPath", catalog)
+        self.assertIn("const std::string housingPatch", catalog)
+
     def test_custom_blender_and_wmo_paths_are_excluded(self) -> None:
         self.assertIn("$ExcludedSourceDirectories = @('custom-assets', 'phase1-furniture')", BUILDER)
         self.assertIn("$ExcludedExtensions = @('.wmo')", BUILDER)

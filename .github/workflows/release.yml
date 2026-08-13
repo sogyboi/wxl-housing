@@ -80,5 +80,18 @@ jobs:
         with:
           tag_name: v${{ steps.package.outputs.version }}
           name: Housing Editor ${{ steps.package.outputs.version }}
-          body: Hub package built from ${{ github.sha }}.
+          body: |
+            Hub package built from ${{ github.sha }}.
+
+            ## Optional Official Housing Content Pack
+
+            For the official furniture catalog, menu art, preview PNGs, and DB2
+            sidecars, download every `wxl-housing-content-${{ steps.package.outputs.version }}-*.zip`
+            asset from this release. Close WoW and extract all of them into the
+            target client's `Data` directory. The final path must be
+            `Data/Patch-Housing.MPQ/...`.
+
+            The content packs are separate from the Hub ZIP because WXL Hub
+            installs extensions under `Extensions` and does not extract files into
+            the game's `Data` directory.
           files: ${{ steps.package.outputs.archive }}

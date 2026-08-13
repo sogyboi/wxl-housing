@@ -1,12 +1,28 @@
 # Official housing content pack
 
-The public Housing Editor release contains the extension and this builder, not
-Blizzard game data. The icon, model, texture, skin, and DB2 files must come from
-an installation or extract that the person running the builder is entitled to use.
-The builder never downloads, uploads, or includes those files in this repository.
+Housing Editor ships the extension through WXL Hub and the official content as
+separate [GitHub Release downloads](https://github.com/sogyboi/wxl-housing/releases/latest). The content is deliberately kept out of the
+source repository and the Hub ZIP because it is large. Download every
+`wxl-housing-content-<version>-*.zip` asset from the matching GitHub Release,
+close WoW, and extract all archives into the target client's `Data` directory.
+
+After extraction, the target must look like this:
+
+```text
+<WoW>\\Data\\Patch-Housing.MPQ\\world\\...
+<WoW>\\Data\\Patch-Housing.MPQ\\interface\\housing\\...
+<WoW>\\Data\\Patch-Housing.MPQ\\DBFilesClient\\...
+```
+
+Do not extract into `Extensions`, and do not leave an extra nested
+`Patch-Housing.MPQ` directory. The release includes a SHA-256 manifest to verify
+each downloaded archive before extraction.
 
 It installs a directory-backed WXL patch at `Data/Patch-Housing.MPQ/`. WarcraftXL
 scans that patch name, so it does not modify Blizzard's stock `Patch-*.MPQ` files.
+Housing Editor reads its official category atlas, catalog panel, and preview PNGs
+directly from that local patch; no separate manual `Extensions/wxl-housing/ui` or
+`thumbnails` copy is required.
 
 ## What is included
 
@@ -17,10 +33,10 @@ includes:
 - `retail-db2`: HouseDecor plus model/texture path DB2 tables; and
 - `retail-housing-ui/retail-art`: official housing icons and panels.
 
-It deliberately excludes `custom-assets` and `phase1-furniture`. Those folders
-contain the Blender/Minecraft-derived content that must not be installed or bundled.
-It also skips WMO root files: WMO placement is disabled in this extension and modern
-WMO handling remains experimental. All supported furniture/prop M2 content is kept.
+It deliberately excludes `custom-assets` and `phase1-furniture`, including the
+Blender/Minecraft-derived files from those roots. It also skips WMO root files:
+WMO placement is disabled in this extension and modern WMO handling remains
+experimental. All supported furniture/prop M2 content is kept.
 
 The older `phase1` fireplace experiment is deliberately not read: its root M2 files
 overlap the complete decor export at the same canonical paths but have different
@@ -47,8 +63,9 @@ If a prior housing patch already exists, the builder refuses to overwrite it. Ad
 
 ## Hub limitation
 
-WXL Hub can extract the extension ZIP but does not run arbitrary installers. That
-is why the builder is shipped beside the DLL rather than being automatically run at
-install time. A public GitHub release also must not redistribute the proprietary
-game-content output. The resulting local `Patch-Housing.MPQ` is the complete
-runtime pack for this owned client.
+WXL Hub installs only the extension ZIP under `Extensions/wxl-housing`; it
+does not run arbitrary installers and does not extract release content into
+`Data`. That is why
+the content pack is a separate download with explicit `Data`-folder instructions.
+The Hub ZIP itself must not redistribute the proprietary content pack. The
+resulting local `Patch-Housing.MPQ` is the complete runtime pack.

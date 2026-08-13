@@ -114,7 +114,7 @@ int __cdecl WXL_Load(const WXL_Api* api)
     (void)TerrainDeform::Instance().Initialize();
 
     api->Log(WXL_LOG_INFO, "wxl-housing",
-              "wxl-housing 0.8.1: HouseDecor catalog + placement ready; "
+              "wxl-housing 0.8.2: HouseDecor catalog + placement ready; "
               "free-camera=%s (Insert toggles the editor)",
               freeCameraReady ? "ready" : "disabled");
     return 1;

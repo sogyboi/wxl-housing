@@ -1,15 +1,20 @@
 [CmdletBinding()]
 param(
-    [string]$Root = (Split-Path -Parent $PSScriptRoot)
+    [string]$Root
 )
+
+if (-not $Root) {
+    $Root = Split-Path -Parent $PSScriptRoot
+}
 
 $ErrorActionPreference = 'Stop'
 $forbiddenNames = @('decor.json')
-$forbiddenExtensions = @('.m2', '.mdx', '.wmo', '.blp', '.dbc', '.db2', '.mpq')
+$forbiddenExtensions = @('.m2', '.mdx', '.wmo', '.blp', '.dbc', '.db2', '.mpq', '.zip')
 $textExtensions = @('.md', '.ps1', '.py', '.json', '.yml', '.yaml', '.cmake', '.cpp', '.hpp', '.h', '.txt')
 $violations = Get-ChildItem -LiteralPath $Root -Recurse -File -Force |
     Where-Object {
-        $_.Name -in $forbiddenNames -or $_.Extension.ToLowerInvariant() -in $forbiddenExtensions
+        $_.FullName -notmatch '\\(\.git|artifacts|build|dist|stage)\\' -and
+        ($_.Name -in $forbiddenNames -or $_.Extension.ToLowerInvariant() -in $forbiddenExtensions)
     }
 
 if ($violations) {
@@ -18,7 +23,10 @@ if ($violations) {
 }
 
 $localPathHits = Get-ChildItem -LiteralPath $Root -Recurse -File -Force |
-    Where-Object { $textExtensions -contains $_.Extension.ToLowerInvariant() } |
+    Where-Object {
+        $_.FullName -notmatch '\\(\.git|artifacts|build|dist|stage)\\' -and
+        $textExtensions -contains $_.Extension.ToLowerInvariant()
+    } |
     Select-String -Pattern 'C:\\Users\\' -ErrorAction Stop
 if ($localPathHits) {
     $localPathHits | ForEach-Object {

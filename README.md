@@ -13,9 +13,17 @@ client-local terrain deformation.
 3. Press **Insert** or click the round building launcher in game.
 
 The Hub ZIP contains `wxl-housing.dll`, its manifest, documentation, and the
-`tools/Build-OfficialHousingContent.ps1` local content builder. It does not
-redistribute WoW game data, UI textures, DB2 files, thumbnails, test clients,
-saved placements, or third-party model conversions.
+`tools/Build-OfficialHousingContent.ps1` local content builder. The optional
+**Official Housing Content Pack** is published as [separate GitHub Release
+downloads](https://github.com/sogyboi/wxl-housing/releases/latest) because it is too large for the Hub extension ZIP. Download every
+`wxl-housing-content-0.8.2-*.zip` asset from the matching release, then extract
+them into the WoW `Data` folder while the client is closed. The combined result
+must be `Data/Patch-Housing.MPQ/...`, not a nested `Patch-Housing.MPQ` folder.
+
+The content archives contain the official decor, UI art, preview PNGs, and DB2
+sidecars required by this extension. They intentionally exclude
+`custom-assets`, `phase1-furniture`, custom Blender/Minecraft-derived files,
+and WMO root models.
 
 ## What it uses from the local client
 
@@ -24,15 +32,15 @@ Housing Editor refers to compatible data already installed by the user:
 - `HouseDecor.db2` is opened through `wxl-db2`.
 - `DBFilesClient/HouseDecorNames.tsv`, if locally available, gives catalog rows
   readable names. Missing names safely fall back to `Decor <row id>` labels.
-- Optional locally extracted UI art and thumbnails are used only when present;
-  otherwise the editor uses its built-in placeholders.
+- The official-content builder places retail UI art and preview PNGs in
+  `Data/Patch-Housing.MPQ`; the editor reads them from there. It falls back to
+  built-in placeholders only when that local patch is absent or incomplete.
 
-Use the included [official content builder](docs/OfficialContent.md) to stage the
-locally owned official decor, UI art, and DB2 files into
-`Data/Patch-Housing.MPQ`. It retains all supported stock furniture/prop M2 files,
-while excluding the Blender/Minecraft-derived object folders and unsupported WMO
-roots. The published catalog contains no bundled custom M2/WMO object, no sample
-`decor.json`, and no hard-coded third-party model row.
+Use the included [official content builder](docs/OfficialContent.md) instead if
+you want to create the same pack from local source material. Both routes stage
+the content in `Data/Patch-Housing.MPQ`. The published catalog contains no
+custom M2/WMO object, no sample `decor.json`, and no hard-coded third-party
+model row.
 
 The source retains the optional local `decor.json` discovery path for people
 who independently install their own licensed packages. Such packages are not
@@ -44,6 +52,9 @@ installer's responsibility.
 Placements are saved only on the client in
 `Extensions/wxl-housing/placements.tsv`; `placements.tsv.bak` is used for
 recovery. Nearby saved objects restore as terrain chunks load.
+
+The catalog opens on placeable Furnishings and hides technical `[DNT]`/WMO rows.
+Use **Filter** if you need to inspect every catalog row.
 
 The free build camera is local and bounded around its activation point. Terrain
 deformation modifies only the rendered loaded terrain: it does not rewrite MPQ
@@ -71,6 +82,7 @@ cmake --build C:/path/to/wxl-core/build --config Release --target wxl-housing
 | `third_party/imguizmo/` | ImGuizmo source (MIT) |
 | `tests/` | Source and manifest regression checks |
 | `tools/Build-OfficialHousingContent.ps1` | Safe local builder for official content |
+| `tools/Build-ReleaseContentPack.ps1` | Splits a completed content patch into release archives |
 | `docs/OfficialContent.md` | Official content source, install, and limits |
 | `store/description.md` | WXL Hub listing description |
 | `.github/workflows/release.yml` | Win32 build and ZIP release automation |

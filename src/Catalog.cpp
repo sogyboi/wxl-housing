@@ -143,6 +143,7 @@ namespace wxl_housing
         // These high cache keys cannot collide with real FileDataIDs.
         constexpr uint32_t kUiTextureCategoryNavigation = 0xFFF00001u;
         constexpr uint32_t kUiTextureCatalogPanel       = 0xFFF00002u;
+        constexpr char kOfficialHousingPatch[]          = "Data\\Patch-Housing.MPQ\\";
 
         const char* CategoryName(int category)
         {
@@ -206,6 +207,8 @@ namespace wxl_housing
         {
             if (path.empty()) return false;
             if (GetFileAttributesA(path.c_str()) != INVALID_FILE_ATTRIBUTES) return true;
+            const std::string housingPatch = std::string(kOfficialHousingPatch) + path;
+            if (GetFileAttributesA(housingPatch.c_str()) != INVALID_FILE_ATTRIBUTES) return true;
             const std::string patch9 = "Data/Patch-9.MPQ/" + path;
             return GetFileAttributesA(patch9.c_str()) != INVALID_FILE_ATTRIBUTES;
         }
@@ -1589,7 +1592,7 @@ namespace wxl_housing
     {
         device_ = device;
         return LoadTextureFile(kUiTextureCategoryNavigation,
-            "Extensions\\wxl-housing\\ui\\housingitemcategorynavigation.png");
+            "Data\\Patch-Housing.MPQ\\interface\\housing\\housingitemcategorynavigation.png");
     }
 
     void* Catalog::LoadThumbnail(uint32_t fdid)
@@ -1613,7 +1616,27 @@ namespace wxl_housing
 
     void* Catalog::LoadRowThumbnail(const DecorRow& row)
     {
-        if (!row.custom || row.thumbPath.empty()) return LoadThumbnail(row.thumbFdid);
+        // Official thumbnails are supplied by the local content builder under the
+        // directory-backed Patch-Housing.MPQ.  The DB2 path is BLP, while the
+        // extracted runtime preview is a PNG with the same relative stem.
+        if (!row.custom)
+        {
+            if (!row.thumbPath.empty())
+            {
+                std::string diskPath = std::string(kOfficialHousingPatch) + row.thumbPath;
+                std::replace(diskPath.begin(), diskPath.end(), '/', '\\');
+                if (EndsWithNoCase(diskPath, ".blp"))
+                    diskPath.replace(diskPath.size() - 4, 4, ".png");
+                if (GetFileAttributesA(diskPath.c_str()) != INVALID_FILE_ATTRIBUTES)
+                    return LoadTextureFile(row.thumbFdid, diskPath.c_str());
+            }
+
+            // Preserve the old per-extension cache as an optional fallback for
+            // installations prepared before the official-content builder.
+            return LoadThumbnail(row.thumbFdid);
+        }
+
+        if (row.thumbPath.empty()) return LoadThumbnail(row.thumbFdid);
         if (!device_) return nullptr;
 
         const auto cached = customThumbnails_.find(row.thumbPath);
@@ -1711,7 +1734,7 @@ namespace wxl_housing
             { 9, 2, 10, 2 },  // misc / ellipsis
         };
         void* iconTexture = LoadTextureFile(kUiTextureCategoryNavigation,
-            "Extensions\\wxl-housing\\ui\\housingitemcategorynavigation.png");
+            "Data\\Patch-Housing.MPQ\\interface\\housing\\housingitemcategorynavigation.png");
         for (int category = kCategoryAll; category <= kCategoryMisc; ++category)
         {
             ImGui::PushID(category);
@@ -1952,7 +1975,7 @@ namespace wxl_housing
             ImGui::SetWindowPos(clampedPos, ImGuiCond_Always);
 
         if (void* panelTexture = LoadTextureFile(kUiTextureCatalogPanel,
-                "Extensions\\wxl-housing\\ui\\housingcatalogpanel.png"))
+                "Data\\Patch-Housing.MPQ\\interface\\housing\\housingcatalogpanel.png"))
         {
             const ImVec2 pos = ImGui::GetWindowPos();
             const ImVec2 size = ImGui::GetWindowSize();
