@@ -70,6 +70,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $stage, 'dist' | Out-Null
           Copy-Item "core/build/Release/$env:EXT_NAME.dll" "$stage/$env:EXT_NAME.dll"
           Copy-Item 'ext/wxl.json', 'ext/README.md', 'ext/LICENSE', 'ext/THIRD_PARTY_NOTICES.md' -Destination $stage
+          Copy-Item 'ext/tools', 'ext/docs' -Destination $stage -Recurse
           Compress-Archive -Path "$stage/*" -DestinationPath $archive -Force
           "version=$version" >> $env:GITHUB_OUTPUT
           "archive=$archive" >> $env:GITHUB_OUTPUT

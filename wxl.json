@@ -3,7 +3,7 @@
 
   "extension": {
     "id": "wxl-housing",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "abi": "1.1",
     "entry": "wxl-housing.dll",
     "assets": [],

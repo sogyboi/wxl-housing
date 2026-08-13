@@ -243,8 +243,8 @@ class LifecycleModelTests(unittest.TestCase):
 
 class ProductionSourceTests(unittest.TestCase):
     def test_manifest_and_fail_closed_lifecycle_are_pinned(self) -> None:
-        self.assertEqual(MANIFEST["extension"]["version"], "0.8.0")
-        self.assertIn('"wxl-housing 0.8.0:', MODULE)
+        self.assertEqual(MANIFEST["extension"]["version"], "0.8.1")
+        self.assertIn('"wxl-housing 0.8.1:', MODULE)
         self.assertIn('"wxl-housing",\n        706,', MODULE)
         for token in (
             "RestoreResult::UnsafeToRestore",

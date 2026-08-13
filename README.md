@@ -12,9 +12,10 @@ client-local terrain deformation.
 2. Install **Housing Editor** and restart the client when prompted.
 3. Press **Insert** or click the round building launcher in game.
 
-The Hub ZIP contains only `wxl-housing.dll`, its manifest, documentation, and
-license notices. It does not include WoW game data, UI textures, DB2 files,
-thumbnails, test clients, saved placements, or third-party model conversions.
+The Hub ZIP contains `wxl-housing.dll`, its manifest, documentation, and the
+`tools/Build-OfficialHousingContent.ps1` local content builder. It does not
+redistribute WoW game data, UI textures, DB2 files, thumbnails, test clients,
+saved placements, or third-party model conversions.
 
 ## What it uses from the local client
 
@@ -26,9 +27,12 @@ Housing Editor refers to compatible data already installed by the user:
 - Optional locally extracted UI art and thumbnails are used only when present;
   otherwise the editor uses its built-in placeholders.
 
-These resources are deliberately not redistributed here. The published catalog
-contains no bundled custom M2/WMO object, no sample `decor.json`, and no
-hard-coded third-party model row.
+Use the included [official content builder](docs/OfficialContent.md) to stage the
+locally owned official decor, UI art, and DB2 files into
+`Data/Patch-Housing.MPQ`. It retains all supported stock furniture/prop M2 files,
+while excluding the Blender/Minecraft-derived object folders and unsupported WMO
+roots. The published catalog contains no bundled custom M2/WMO object, no sample
+`decor.json`, and no hard-coded third-party model row.
 
 The source retains the optional local `decor.json` discovery path for people
 who independently install their own licensed packages. Such packages are not
@@ -66,6 +70,8 @@ cmake --build C:/path/to/wxl-core/build --config Release --target wxl-housing
 | `src/` | Extension, catalog, placement, input, camera, and terrain code |
 | `third_party/imguizmo/` | ImGuizmo source (MIT) |
 | `tests/` | Source and manifest regression checks |
+| `tools/Build-OfficialHousingContent.ps1` | Safe local builder for official content |
+| `docs/OfficialContent.md` | Official content source, install, and limits |
 | `store/description.md` | WXL Hub listing description |
 | `.github/workflows/release.yml` | Win32 build and ZIP release automation |
 
